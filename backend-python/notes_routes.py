@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import APIRouter, Body, Request, status
 from fastapi.encoders import jsonable_encoder
-from typing import List
 from bson.objectid import ObjectId
 
 from notes_models import Note, GetNotesByUsernameAndCollection, UpdateNote, EditNotesByUsernameAndCollection

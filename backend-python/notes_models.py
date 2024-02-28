@@ -1,18 +1,4 @@
-import uuid
-from typing import Optional
 from pydantic import BaseModel, Field
-
-class Collection(BaseModel):
-    username: str = Field(...)
-    collectionName: str = Field(...)
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "username": "yurika",
-                "collectionName": "unsorted"
-            }
-        }
 
 class Note(BaseModel):
     username: str = Field(...)
@@ -25,18 +11,6 @@ class Note(BaseModel):
                 "username": "yurika",
                 "content": "test note",
                 "collection": "unsorted"
-            }
-        }
-
-class User(BaseModel):
-    username: str = Field(...)
-    password: str = Field(...)
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "username": "yurika",
-                "password": "h3bAhbje4sUMe89332nXyajsS44"
             }
         }
 
