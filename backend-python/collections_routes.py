@@ -27,7 +27,7 @@ def edit_collection(request: Request, id: str, entry: EditCollection = Body(...)
     condition = { "_id": ObjectId(id) };
     updateTo = { "$set": entry};
 
-    request.app.database["collections"].update_one(condition, updateTo )
+    request.app.database["collections"].update_one(condition, updateTo)
     return "Collection updated!"
 
 

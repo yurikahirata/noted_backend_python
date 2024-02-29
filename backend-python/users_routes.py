@@ -25,6 +25,7 @@ def check_user(request: Request, username: Username = Body(...)):
 @router.post("/", response_description="Create a new user", status_code=status.HTTP_200_OK)
 def create_user(request: Request, response: Response, user: User = Body(...)):
     user = jsonable_encoder(user)
+
     res = requests.post("http://127.0.0.1:8000/users/username", json={"username":user["username"]})
     if (res.text != "false"):
       response.status_code = status.HTTP_400_BAD_REQUEST
@@ -35,15 +36,23 @@ def create_user(request: Request, response: Response, user: User = Body(...)):
     bytes = password.encode('utf-8')
     hashedPassword = bcrypt.hashpw(bytes, salt)
     hashedPassword = hashedPassword.decode('utf-8')
+
     newUser = {"username": user["username"], "hashedPassword": hashedPassword}
-    request.app.database["users"].insert_one(newUser)
-    return "New user created!"
+
+    insertedId = request.app.database["users"].insert_one(newUser)
+    insertedId = insertedId.inserted_id
+
+    result = request.app.database["users"].find_one({"_id": ObjectId(insertedId)})
+    result["_id"] = str(result["_id"])
+
+    return result
 
 @router.post("/session", response_description="Authenticate a user", status_code=status.HTTP_200_OK)
 def authenticate_user(request: Request, response: Response, user: User = Body(...)):
     user = jsonable_encoder(user)
 
     res = requests.post("http://127.0.0.1:8000/users/username", json={"username":user["username"]})
+
     if (res.text == "false"):
       response.status_code = status.HTTP_400_BAD_REQUEST
       return "Incorrect username"
@@ -53,8 +62,10 @@ def authenticate_user(request: Request, response: Response, user: User = Body(..
     password = user["password"]
     bytes = password.encode('utf-8')
     result = bcrypt.checkpw(bytes, res["hashedPassword"].encode('utf-8'))
+
     if (result != True):
       response.status_code = status.HTTP_400_BAD_REQUEST
       return "Incorrect password"
+    
     return "User authenticated!"
 
